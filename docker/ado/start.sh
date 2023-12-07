@@ -8,7 +8,7 @@ fi
 
 IDENTITY_HEADER="$IDENTITY_HEADER"
 IDENTITY_ENDPOINT="$IDENTITY_ENDPOINT"
-APPLICATION_ID="9831223a-ad06-4fd4-98ec-e47a890f1ab7" # Replace with your User Assigned Managed Identity Application ID
+APPLICATION_ID="$USRMI_ID" # Uses environment variable from the container app environment variables.
 response=$(curl -s -X GET -H "X-IDENTITY-HEADER: $IDENTITY_HEADER" "$IDENTITY_ENDPOINT?resource=$APPLICATION_ID&api-version=2019-08-01")
 AZP_TOKEN=$(echo "$response" | jq -r '.access_token')
 
