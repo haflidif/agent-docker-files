@@ -9,19 +9,19 @@ LABEL BaseImage="ubuntu:20.04"
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Define Args for the needed to add the package
-ARG PS_VERSION=7.4.0
-ARG PS_PACKAGE=powershell_${PS_VERSION}-1.deb_amd64.deb
-ARG PS_PACKAGE_URL=https://github.com/PowerShell/PowerShell/releases/download/v${PS_VERSION}/${PS_PACKAGE}
-ARG TARGETARCH=amd64
-ARG AGENT_VERSION=2.213.2
+# ARG PS_VERSION=7.4.0
+# ARG PS_PACKAGE=powershell_${PS_VERSION}-1.deb_amd64.deb
+# ARG PS_PACKAGE_URL=https://github.com/PowerShell/PowerShell/releases/download/v${PS_VERSION}/${PS_PACKAGE}
+# ARG TARGETARCH=amd64
+# ARG AGENT_VERSION=2.213.2
 
 # Define ENVs for Localization/Globalization
-ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
-    LC_ALL=en_US.UTF-8 \
-    LANG=en_US.UTF-8 \
-    # set a fixed location for the Module analysis cache
-    PSModuleAnalysisCachePath=/var/cache/microsoft/powershell/PSModuleAnalysisCache/ModuleAnalysisCache \
-    POWERSHELL_DISTRIBUTION_CHANNEL=PSDocker-Ubuntu-20.04
+# ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
+#     LC_ALL=en_US.UTF-8 \
+#     LANG=en_US.UTF-8 \
+#     # set a fixed location for the Module analysis cache
+#     PSModuleAnalysisCachePath=/var/cache/microsoft/powershell/PSModuleAnalysisCache/ModuleAnalysisCache \
+#     POWERSHELL_DISTRIBUTION_CHANNEL=PSDocker-Ubuntu-20.04
 
 RUN echo "APT::Get::Assume-Yes \"true\";" > /etc/apt/apt.conf.d/90assumeyes
 
@@ -72,4 +72,4 @@ RUN chmod +x start.sh
 # All subsequent actions will be performed as the agentuser
 USER agentuser
 
-ENTRYPOINT [ "./start.sh", "--once" ]
+ENTRYPOINT [ "./start.sh" ]
