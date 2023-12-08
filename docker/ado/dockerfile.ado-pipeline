@@ -67,7 +67,7 @@ WORKDIR /azp
 RUN chown -R agentuser:agentuser /azp
 RUN chmod 755 /azp
 
-COPY start.sh .
+COPY ./start.sh .
 RUN chmod +x start.sh
 # All subsequent actions will be performed as the agentuser
 USER agentuser
