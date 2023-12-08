@@ -8,7 +8,7 @@ fi
 
 IDENTITY_HEADER="$IDENTITY_HEADER"
 IDENTITY_ENDPOINT="$IDENTITY_ENDPOINT"
-APPLICATION_ID="$USRMI_ID" # Uses environment variable from the container app environment variables.
+APPLICATION_ID="499b84ac-1321-427f-aa17-267ca6975798" # This is the fixed Application ID for Azure DevOps Services. Do not change it.
 response=$(curl -s -X GET -H "X-IDENTITY-HEADER: $IDENTITY_HEADER" "$IDENTITY_ENDPOINT?resource=$APPLICATION_ID&api-version=2019-08-01")
 AZP_TOKEN=$(echo "$response" | jq -r '.access_token')
 
