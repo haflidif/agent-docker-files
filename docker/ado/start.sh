@@ -20,16 +20,12 @@ echo "GET Response: $IDENTITY_ENDPOINT?resource=$APPLICATION_ID&client_id=$USER_
 echo "AZP_URL: $AZP_URL"
 echo "AZP_AGENT_NAME: $AZP_AGENT_NAME"
 echo "AZP_POOL: $AZP_POOL"
-echo "AZP_TOKEN: $AZP_TOKEN"
 # End debugging
 
-az login --identity --username $USER_ASSIGNED_MANAGED_IDENTITY_CLIENT_ID --allow-no-subscriptions --verbose
-# az login --federated-token "$(cat $AZURE_FEDERATED_TOKEN_FILE)" -- -u $USER_ASSIGNED_MANAGED_IDENTITY_CLIENT_ID -t $AZURE_TENANT_ID --allow-no-subscriptions
-AZP_TOKEN=$(az account get-access-token --resource $APPLICATION_ID --query "accessToken" --output tsv)
+response=$(curl -X GET -H "X-IDENTITY-HEADER: $IDENTITY_HEADER" "$IDENTITY_ENDPOINT?resource=$APPLICATION_ID&client_id=$USER_ASSIGNED_MANAGED_IDENTITY_CLIENT_ID&api-version=2019-08-01" --verbose)
 
-# response=$(curl -s -X GET -H "X-IDENTITY-HEADER: $IDENTITY_HEADER" "$IDENTITY_ENDPOINT?resource=$APPLICATION_ID&client_id=$USER_ASSIGNED_MANAGED_IDENTITY_CLIENT_ID&api-version=2019-08-01")
-
-# AZP_TOKEN=$(echo "$response" | jq -r '.access_token')
+AZP_TOKEN=$(echo "$response" | jq -r '.access_token')
+echo "AZP_TOKEN: $response"
 
 if [ -z "$AZP_TOKEN_FILE" ]; then
   if [ -z "$AZP_TOKEN" ]; then
@@ -79,6 +75,7 @@ print_header() {
 export VSO_AGENT_IGNORE=AZP_TOKEN,AZP_TOKEN_FILE
 
 print_header "1. Determining matching Azure Pipelines agent..."
+echo "1. Determining matching Azure Pipelines agent..."
 
 AZP_AGENT_PACKAGES=$(curl -LsS \
     -u user:$(cat "$AZP_TOKEN_FILE") \
@@ -86,6 +83,7 @@ AZP_AGENT_PACKAGES=$(curl -LsS \
     "$AZP_URL/_apis/distributedtask/packages/agent?platform=$TARGETARCH&top=1")
 
 AZP_AGENT_PACKAGE_LATEST_URL=$(echo "$AZP_AGENT_PACKAGES" | jq -r '.value[0].downloadUrl')
+echo "AZP_AGENT_PACKAGE_LATEST_URL: $AZP_AGENT_PACKAGE_LATEST_URL"
 
 if [ -z "$AZP_AGENT_PACKAGE_LATEST_URL" -o "$AZP_AGENT_PACKAGE_LATEST_URL" == "null" ]; then
   echo 1>&2 "error: could not determine a matching Azure Pipelines agent"
@@ -94,6 +92,7 @@ if [ -z "$AZP_AGENT_PACKAGE_LATEST_URL" -o "$AZP_AGENT_PACKAGE_LATEST_URL" == "n
 fi
 
 print_header "2. Downloading and extracting Azure Pipelines agent..."
+echo "2. Downloading and extracting Azure Pipelines agent..."
 
 echo "Agent package URL: $AZP_AGENT_PACKAGE_LATEST_URL"
 curl -LsS $AZP_AGENT_PACKAGE_LATEST_URL | tar -xz & wait $!
