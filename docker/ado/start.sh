@@ -20,11 +20,16 @@ echo "GET Response: $IDENTITY_ENDPOINT?resource=$APPLICATION_ID&client_id=$USER_
 echo "AZP_URL: $AZP_URL"
 echo "AZP_AGENT_NAME: $AZP_AGENT_NAME"
 echo "AZP_POOL: $AZP_POOL"
+echo "AZP_TOKEN: $AZP_TOKEN"
 # End debugging
 
-response=$(curl -s -X GET -H "X-IDENTITY-HEADER: $IDENTITY_HEADER" "$IDENTITY_ENDPOINT?resource=$APPLICATION_ID&client_id=$USER_ASSIGNED_MANAGED_IDENTITY_CLIENT_ID&api-version=2019-08-01")
+az login --identity --username $USER_ASSIGNED_MANAGED_IDENTITY_CLIENT_ID --allow-no-subscriptions --verbose
+# az login --federated-token "$(cat $AZURE_FEDERATED_TOKEN_FILE)" -- -u $USER_ASSIGNED_MANAGED_IDENTITY_CLIENT_ID -t $AZURE_TENANT_ID --allow-no-subscriptions
+AZP_TOKEN=$(az account get-access-token --resource $APPLICATION_ID --query "accessToken" --output tsv)
 
-AZP_TOKEN=$(echo "$response" | jq -r '.access_token')
+# response=$(curl -s -X GET -H "X-IDENTITY-HEADER: $IDENTITY_HEADER" "$IDENTITY_ENDPOINT?resource=$APPLICATION_ID&client_id=$USER_ASSIGNED_MANAGED_IDENTITY_CLIENT_ID&api-version=2019-08-01")
+
+# AZP_TOKEN=$(echo "$response" | jq -r '.access_token')
 
 if [ -z "$AZP_TOKEN_FILE" ]; then
   if [ -z "$AZP_TOKEN" ]; then
